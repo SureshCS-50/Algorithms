@@ -1,0 +1,87 @@
+<html>
+<title>Subscribe</title>
+<head>
+
+<script type="text/javascript" src="jquery.js"></script>
+
+<script type"text/javascript">
+	$(document).ready(function(){
+		$("form#subscribeform").submit(function() {
+			var email     = $('#email').attr('value');
+			if (email == "") {
+				$('div.error').fadeIn();
+				$('div.error').html("<font color=\"red\">Error: Enter the E-mail address.</font><br/>")
+				$('div.loading').hide();
+				return false;
+			}
+			var frequency;
+			var radioButtons = document.getElementsByName("frequency");
+			
+			for (var x = 0; x < radioButtons.length; x ++) {
+				if (radioButtons[x].checked) {
+					frequency = radioButtons[x].value;
+				}
+			}
+			$('div.loading').fadeIn();
+			$('div.error').hide();
+			
+			var dataToPost = {
+				email: email,
+				frequency: frequency,
+				subscribe: 1
+			};
+			
+			$.ajax({
+				type: "POST",
+				url: "verify.php",
+				data: dataToPost,
+				success: function(data){
+					if (data.indexOf("Error") == 0) {
+						$('div.error').fadeIn();
+						$('div.error').html("<font color=\"red\">" + data + "</font><br/>")
+						$('div.loading').hide();
+					} else {
+						$('form#subscribeform').hide();
+						$('div.success').fadeIn();
+						$('div.loading').hide();
+						$('div.success').html("<fieldset>" + data + "</fieldset>")
+					}
+				}
+			});
+		return false;
+		});
+	});
+</script>
+</head>
+<body>
+
+<div id="wrap">
+	<br />
+		<form id="subscribeform" method="post" name="subscribeform" action="verify.php">
+			<fieldset>
+			<legend>Subscribe</legend>
+			
+			<div class="error" style="display:none;"></div>
+				<label for="email">Email: </label>
+				
+				<input type="text" name="email" id="email" class="text" />
+				<br /><br />
+				<input name="frequency" type="radio" id="frequency_0" value="daily" checked>
+				Daily</label>	
+				<label>
+				<input type="radio" name="frequency" value="weekly" id="frequency_1">
+				Weekly</label>
+				<label>
+				<input type="radio" name="frequency" value="monthly" id="frequency_2">
+				Monthly</label>
+				<br /><br />
+				<button type="submit" class="button positive"> Subscribe </button>
+			</fieldset>
+		</form>
+		<div class="loading" style="display:none;"><img src="loading.gif" border="0" alt="Loading, please wait..." /></div>
+		<div class="success" style="display:none;">
+			<p></p>
+		</div>
+</div>
+</body>
+</html>
